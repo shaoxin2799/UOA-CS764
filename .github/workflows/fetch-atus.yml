@@ -1,0 +1,29 @@
+name: Fetch ATUS 2003-2024
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-atus.yml"
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download ATUS
+        run: bash scripts/download_atus.sh data/raw/atus/2003-2024
+      - name: Build manifest
+        run: |
+          python scripts/build_manifest.py data/raw/atus/2003-2024             --name atus-2003-2024             --source https://www.bls.gov/tus/data/datafiles-0324.htm             --output manifests/atus-2003-2024.json
+      - name: Upload ATUS bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: atus-2003-2024
+          path: |
+            data/raw/atus/2003-2024/
+            manifests/atus-2003-2024.json
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
