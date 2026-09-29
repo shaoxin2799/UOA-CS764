@@ -1,0 +1,34 @@
+name: Fetch time-series seed data
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-timeseries.yml"
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements-data.txt
+      - name: Download THUML seed datasets
+        run: python scripts/download_ts_seed.py
+      - name: Build manifest
+        run: |
+          python scripts/build_manifest.py data/raw/timeseries/thuml             --name timeseries-thuml-seed             --source https://huggingface.co/datasets/thuml/Time-Series-Library             --output manifests/timeseries-thuml-seed.json
+      - name: Upload time-series bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: timeseries-thuml-seed
+          path: |
+            data/raw/timeseries/thuml/
+            manifests/timeseries-thuml-seed.json
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
