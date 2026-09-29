@@ -2,9 +2,6 @@ name: Fetch time-series seed data
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/fetch-timeseries.yml"
 
 jobs:
   fetch:
@@ -15,7 +12,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
       - run: pip install -r requirements-data.txt
       - name: Download THUML seed datasets
         run: python scripts/download_ts_seed.py
