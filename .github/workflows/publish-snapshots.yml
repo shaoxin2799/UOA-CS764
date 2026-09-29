@@ -1,0 +1,45 @@
+name: Publish frozen data snapshots
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/publish-snapshots.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: research-data-2026-09-30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download successful dataset artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          declare -A A=(
+            [atus-2003-2024.zip]=11031540945
+            [timeseries-thuml-seed.zip]=11031296072
+            [brfss-2024.zip]=11031830055
+            [gifteval.zip]=11031152204
+            [nshap-access-probe.zip]=11030554905
+          )
+          for f in "${!A[@]}"; do
+            echo "Fetching $f (artifact ${A[$f]})"
+            gh api -H "Accept: application/vnd.github+json"               "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${A[$f]}/zip" > "release-assets/$f"
+            test -s "release-assets/$f"
+          done
+          (cd release-assets && sha256sum *.zip | tee SHA256SUMS.txt)
+      - name: Create or update release
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY"               --title "Frozen research data snapshots — 2026-09-30"               --notes "Frozen acquisition snapshots for ATUS 2003–2024, BRFSS 2024, THUML time-series seed data, GIFT-Eval, plus the NSHAP access probe. Each archive contains its generated manifest where applicable."
+          fi
+          gh release upload "$TAG" release-assets/* --repo "$GITHUB_REPOSITORY" --clobber
