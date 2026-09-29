@@ -1,0 +1,10 @@
+# data and generated artifacts
+data/
+artifacts/
+manifests/*.json
+*.zip
+*.tar.gz
+__pycache__/
+.venv/
+.env
+.DS_Store
