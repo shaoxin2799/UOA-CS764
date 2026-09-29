@@ -1,0 +1,28 @@
+name: Fetch BRFSS 2024
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-brfss.yml"
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download official CDC BRFSS 2024 files
+        run: bash scripts/download_brfss2024.sh data/raw/brfss/2024
+      - name: Build manifest
+        run: |
+          python scripts/build_manifest.py data/raw/brfss/2024             --name brfss-2024             --source https://www.cdc.gov/brfss/annual_data/annual_2024.html             --output manifests/brfss-2024.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brfss-2024
+          path: |
+            data/raw/brfss/2024/
+            manifests/brfss-2024.json
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
