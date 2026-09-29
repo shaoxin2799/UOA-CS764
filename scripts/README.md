@@ -6,3 +6,4 @@
 - `build_manifest.py` — byte-size + SHA-256 manifest generator.
 - `audit_aamas_inputs.py` — verifies required local raw inputs without attempting to bypass restricted sources.
 - `preflight.py` — checks basic host tooling.
+- `finalize_nshap.sh` — validates the three authenticated NSHAP bundles, assigns pinned study/version names, writes SHA-256 checksums and a JSON manifest, and optionally uploads them to the existing release when `UPLOAD=1`.
