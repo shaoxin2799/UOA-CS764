@@ -1,0 +1,23 @@
+name: Probe NSHAP public-use access
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/probe-nshap.yml"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install requests
+      - run: python scripts/nshap_probe.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nshap-access-probe
+          path: |
+            data/raw/nshap/
+            manifests/nshap-access-probe.json
+          retention-days: 7
