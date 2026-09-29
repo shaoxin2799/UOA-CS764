@@ -2,21 +2,32 @@ name: Fetch ATUS 2003-2024
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/fetch-atus.yml"
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Download ATUS
+
+      - name: Try direct BLS download
+        id: direct
+        continue-on-error: true
         run: bash scripts/download_atus.sh data/raw/atus/2003-2024
+
+      - name: Browser fallback
+        if: steps.direct.outcome == 'failure'
+        run: |
+          python -m pip install --upgrade pip playwright
+          xvfb-run -a python scripts/download_atus_browser.py
+          cd data/raw/atus/2003-2024
+          for f in *.zip; do unzip -t "$f" >/dev/null; done
+          sha256sum *.zip | tee SHA256SUMS.txt
+
       - name: Build manifest
         run: |
           python scripts/build_manifest.py data/raw/atus/2003-2024             --name atus-2003-2024             --source https://www.bls.gov/tus/data/datafiles-0324.htm             --output manifests/atus-2003-2024.json
+
       - name: Upload ATUS bundle
         uses: actions/upload-artifact@v4
         with:
