@@ -1,0 +1,33 @@
+{
+  "brfss": {
+    "role": "population/state distribution backbone",
+    "official_index": "https://www.cdc.gov/brfss/annual_data/annual_data.htm",
+    "acquisition": "pin exact survey year before formal run",
+    "status": "prepared_not_frozen"
+  },
+  "atus": {
+    "role": "activity profiles and time-with-others",
+    "official_index": "https://www.bls.gov/tus/data/datafiles-0324.htm",
+    "version": "2003-2024",
+    "files": [
+      "atusresp-0324.zip",
+      "atusrost-0324.zip",
+      "atusact-0324.zip",
+      "atussum-0324.zip",
+      "atuswho-0324.zip",
+      "atuscps-0324.zip"
+    ],
+    "status": "automated"
+  },
+  "nshap": {
+    "role": "network structure, UCLA-3 loneliness calibration, long-horizon persistence",
+    "official_info": "https://www.icpsr.umich.edu/sites/DSDR/news/nshap-new-standardized-terminology-regarding-rounds-and-waves-of-data-collection",
+    "rounds": [
+      "R1 2005-06",
+      "R2 2010-11",
+      "R3 2015-16"
+    ],
+    "acquisition": "authenticated/licensed files only; no bypass or silent mirror",
+    "status": "audit_only_until_credentials_available"
+  }
+}
