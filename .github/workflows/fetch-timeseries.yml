@@ -2,6 +2,9 @@ name: Fetch time-series seed data
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/fetch-timeseries.yml"
 
 jobs:
   fetch:
